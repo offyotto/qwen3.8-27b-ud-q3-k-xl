@@ -1,0 +1,11 @@
+{
+  "base_model": "Qwen/Qwen3.8-27B",
+  "quantized_model": "unsloth/Qwen3.8-27B-GGUF",
+  "file": "Qwen3.8-27B-UD-Q3_K_XL.gguf",
+  "source_revision": "af7362f48888d393c99ddd33ccc27fdaeb8d80f0",
+  "source_bytes": 13146393504,
+  "source_sha256": "8c2a45ff85e7674ca185ec8eb6cdeab0e617ed9d8018caed0b64380eb2a67a5e",
+  "license": "Apache-2.0",
+  "source_url": "https://huggingface.co/unsloth/Qwen3.8-27B-GGUF/resolve/main/Qwen3.8-27B-UD-Q3_K_XL.gguf?download=true",
+  "downloaded_utc": "2026-08-30"
+}
