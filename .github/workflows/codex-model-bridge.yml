@@ -1,4 +1,4 @@
-name: Temporary Codex model bridge
+name: Temporary Codex release URL probe
 
 on:
   push:
@@ -10,83 +10,11 @@ permissions:
   contents: read
 
 jobs:
-  bridge:
-    name: Bridge part ${{ matrix.index }}
+  probe:
     runs-on: ubuntu-latest
-    strategy:
-      fail-fast: false
-      matrix:
-        include:
-          - index: "00"
-            sha256: "6820478983b5a9a4181f5ace861abcf53aff2aef16f2551e71d3c2acdb83e2fc"
-          - index: "01"
-            sha256: "2da05ee9b8575cbba186f83229bca663873e4fb5d460d620922897460005ddcb"
-          - index: "02"
-            sha256: "7a690b41301bd504560fa8c058e36604d00964c3ba7a074e7f1a230747d58fe6"
-          - index: "03"
-            sha256: "430951acfe7627cea5e8b84cab1b8f96b9d4301a8d2b5316a088b517e35853bc"
-          - index: "04"
-            sha256: "0ddfb3e1d4477ea995153568f82013f4923c58c7aa0cbc0006221bfab3e4da99"
-          - index: "05"
-            sha256: "5e97b1dc93100531bf870282d4295a5563c1c44d9d19d67f27f0295dbdd6e790"
-          - index: "06"
-            sha256: "b9e13f8e9cdb33cf474229843afc7214874c708c9c6033a78cc64dd2e7b3f842"
-
     steps:
-      - name: Download, verify, and slice release chunk
-        env:
-          PART: Qwen3.8-27B-UD-Q3_K_XL.gguf.part-${{ matrix.index }}
-          EXPECTED_SHA256: ${{ matrix.sha256 }}
+      - name: Resolve public release asset URL
         run: |
           set -euo pipefail
-          url="https://github.com/offyotto/qwen3.8-27b-ud-q3-k-xl/releases/download/v1.0.0/$PART"
-          curl -L --fail --retry 5 --retry-delay 2 --output "$PART" "$url"
-          printf '%s  %s\n' "$EXPECTED_SHA256" "$PART" | sha256sum -c -
-          split -b 450000000 -d -a 1 "$PART" "$PART.slice-"
-
-      - name: Upload slice 0
-        uses: actions/upload-artifact@v4
-        with:
-          name: qwen27b-part-${{ matrix.index }}-slice-0
-          path: Qwen3.8-27B-UD-Q3_K_XL.gguf.part-${{ matrix.index }}.slice-0
-          compression-level: 0
-          retention-days: 1
-          if-no-files-found: error
-
-      - name: Upload slice 1
-        uses: actions/upload-artifact@v4
-        with:
-          name: qwen27b-part-${{ matrix.index }}-slice-1
-          path: Qwen3.8-27B-UD-Q3_K_XL.gguf.part-${{ matrix.index }}.slice-1
-          compression-level: 0
-          retention-days: 1
-          if-no-files-found: error
-
-      - name: Upload slice 2
-        uses: actions/upload-artifact@v4
-        with:
-          name: qwen27b-part-${{ matrix.index }}-slice-2
-          path: Qwen3.8-27B-UD-Q3_K_XL.gguf.part-${{ matrix.index }}.slice-2
-          compression-level: 0
-          retention-days: 1
-          if-no-files-found: error
-
-      - name: Upload slice 3
-        if: matrix.index != '06'
-        uses: actions/upload-artifact@v4
-        with:
-          name: qwen27b-part-${{ matrix.index }}-slice-3
-          path: Qwen3.8-27B-UD-Q3_K_XL.gguf.part-${{ matrix.index }}.slice-3
-          compression-level: 0
-          retention-days: 1
-          if-no-files-found: error
-
-      - name: Upload slice 4
-        if: matrix.index != '06'
-        uses: actions/upload-artifact@v4
-        with:
-          name: qwen27b-part-${{ matrix.index }}-slice-4
-          path: Qwen3.8-27B-UD-Q3_K_XL.gguf.part-${{ matrix.index }}.slice-4
-          compression-level: 0
-          retention-days: 1
-          if-no-files-found: error
+          url="https://github.com/offyotto/qwen3.8-27b-ud-q3-k-xl/releases/download/v1.0.0/Qwen3.8-27B-UD-Q3_K_XL.gguf.part-01"
+          curl -L --fail --range 0-0 --output /dev/null --silent --show-error --write-out 'RESOLVED_URL=%{url_effective}\n' "$url"
