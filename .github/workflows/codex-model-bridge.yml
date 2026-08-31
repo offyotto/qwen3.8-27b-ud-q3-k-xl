@@ -17,4 +17,7 @@ jobs:
         run: |
           set -euo pipefail
           url="https://github.com/offyotto/qwen3.8-27b-ud-q3-k-xl/releases/download/v1.0.0/Qwen3.8-27B-UD-Q3_K_XL.gguf.part-01"
-          curl -L --fail --range 0-0 --output /dev/null --silent --show-error --write-out 'RESOLVED_URL=%{url_effective}\n' "$url"
+          resolved="$(curl -L --fail --range 0-0 --output /dev/null --silent --show-error --write-out '%{url_effective}' "$url")"
+          printf 'RESOLVED_URL_B64='
+          printf '%s' "$resolved" | base64 -w0
+          printf '\n'
