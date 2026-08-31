@@ -13,11 +13,13 @@ jobs:
   probe:
     runs-on: ubuntu-latest
     steps:
-      - name: Resolve public release asset URL
+      - name: Resolve all public release asset URLs
         run: |
           set -euo pipefail
-          url="https://github.com/offyotto/qwen3.8-27b-ud-q3-k-xl/releases/download/v1.0.0/Qwen3.8-27B-UD-Q3_K_XL.gguf.part-01"
-          resolved="$(curl -L --fail --range 0-0 --output /dev/null --silent --show-error --write-out '%{url_effective}' "$url")"
-          printf 'RESOLVED_URL_B64='
-          printf '%s' "$resolved" | base64 -w0
-          printf '\n'
+          for index in 00 01 02 03 04 05 06; do
+            url="https://github.com/offyotto/qwen3.8-27b-ud-q3-k-xl/releases/download/v1.0.0/Qwen3.8-27B-UD-Q3_K_XL.gguf.part-$index"
+            resolved="$(curl -L --fail --range 0-0 --output /dev/null --silent --show-error --write-out '%{url_effective}' "$url")"
+            printf 'PART_%s_URL_B64=' "$index"
+            printf '%s' "$resolved" | base64 -w0
+            printf '\n'
+          done
