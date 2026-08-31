@@ -33,7 +33,7 @@ jobs:
             sha256: "b9e13f8e9cdb33cf474229843afc7214874c708c9c6033a78cc64dd2e7b3f842"
 
     steps:
-      - name: Download release chunk
+      - name: Download, verify, and slice release chunk
         env:
           PART: Qwen3.8-27B-UD-Q3_K_XL.gguf.part-${{ matrix.index }}
           EXPECTED_SHA256: ${{ matrix.sha256 }}
@@ -42,12 +42,51 @@ jobs:
           url="https://github.com/offyotto/qwen3.8-27b-ud-q3-k-xl/releases/download/v1.0.0/$PART"
           curl -L --fail --retry 5 --retry-delay 2 --output "$PART" "$url"
           printf '%s  %s\n' "$EXPECTED_SHA256" "$PART" | sha256sum -c -
+          split -b 450000000 -d -a 1 "$PART" "$PART.slice-"
 
-      - name: Upload verified chunk
+      - name: Upload slice 0
         uses: actions/upload-artifact@v4
         with:
-          name: qwen27b-part-${{ matrix.index }}
-          path: Qwen3.8-27B-UD-Q3_K_XL.gguf.part-${{ matrix.index }}
+          name: qwen27b-part-${{ matrix.index }}-slice-0
+          path: Qwen3.8-27B-UD-Q3_K_XL.gguf.part-${{ matrix.index }}.slice-0
+          compression-level: 0
+          retention-days: 1
+          if-no-files-found: error
+
+      - name: Upload slice 1
+        uses: actions/upload-artifact@v4
+        with:
+          name: qwen27b-part-${{ matrix.index }}-slice-1
+          path: Qwen3.8-27B-UD-Q3_K_XL.gguf.part-${{ matrix.index }}.slice-1
+          compression-level: 0
+          retention-days: 1
+          if-no-files-found: error
+
+      - name: Upload slice 2
+        uses: actions/upload-artifact@v4
+        with:
+          name: qwen27b-part-${{ matrix.index }}-slice-2
+          path: Qwen3.8-27B-UD-Q3_K_XL.gguf.part-${{ matrix.index }}.slice-2
+          compression-level: 0
+          retention-days: 1
+          if-no-files-found: error
+
+      - name: Upload slice 3
+        if: matrix.index != '06'
+        uses: actions/upload-artifact@v4
+        with:
+          name: qwen27b-part-${{ matrix.index }}-slice-3
+          path: Qwen3.8-27B-UD-Q3_K_XL.gguf.part-${{ matrix.index }}.slice-3
+          compression-level: 0
+          retention-days: 1
+          if-no-files-found: error
+
+      - name: Upload slice 4
+        if: matrix.index != '06'
+        uses: actions/upload-artifact@v4
+        with:
+          name: qwen27b-part-${{ matrix.index }}-slice-4
+          path: Qwen3.8-27B-UD-Q3_K_XL.gguf.part-${{ matrix.index }}.slice-4
           compression-level: 0
           retention-days: 1
           if-no-files-found: error
